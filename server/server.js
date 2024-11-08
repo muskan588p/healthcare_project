@@ -5,9 +5,13 @@ const errorHandler = require("./middleware/errorHandler");
 const cors = require("cors");
 const hbs = require("hbs");
 const path = require("path");
+const doctorsDetails = require("./router/doctorsDetails");
+
 hbs.registerPartials(path.join(__dirname, '/views/partials'));
 const multer=require("multer");
+
 const upload=multer({dest:"uploads/"});
+const Profile = require("./models/profile");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -42,8 +46,8 @@ app.get("/home",(req,res)=>{
             { username: "Piyush", date: "23-10-2024", subject: "Science" },
             { username: "Anshuman", date: "23-10-2024", subject: "History" }
         ]
-    })
-})
+    });
+});
 
 
 app.get("/allusers",(req,res)=>{
@@ -53,29 +57,41 @@ app.get("/allusers",(req,res)=>{
             { username: "Piyush", date: "23-10-2024", subject: "Science" },
             { username: "Anshuman", date: "23-10-2024", subject: "History" }
         ]
-    })
-})
+    });
+});
 
 // route for user registration and authentication
 
 app.use("/api/register",require("./routers/userRoutes"));
+app.use("/api/doctors", doctorsDetails);
 
 app.post('/profile', upload.single('avatar'),function(req,res,next){
     console.log(req.body);
     console.log(req.file);
-    return res.redirect("/home");
-});
-const storage=multer.diskStorage({
-    destination: function(req,file,cb){
-        cb(null,"/tmp/my-uploads")
-    },
-    filename:function (req,file,cb){
-        const uniqueSuffix=Date.now()+"-"+ Math.round(Math.random()*1E9)
-        cb(null, file.fieldname+ "-"+ uniqueSuffix);
+
+    try {
+        // Save the uploaded image path to the database (Profie model)
+        const newProfile = new Profile({ image: req.file.path });
+        await newProfile.save();
+
+        // Redirect or render the profile view with the uploaded image
+        res.render("profile", { image: req.file.path });
+    } catch (err) {
+        console.error("Error saving profile:", err);
+        next(err);
     }
-})
+    // Redirect to /home after the upload
+    //return res.redirect("/home");
+});
+
 
 // const upload=multer({storage:storage});
+
+
+
+
+
+
 
 
 
