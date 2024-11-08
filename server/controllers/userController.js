@@ -37,4 +37,30 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(201).json({ message: "User registered successfully", user: newUser });
 });
 
+const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        res.status(400);
+        throw new Error("Please provide email and password");
+    }
+    const user = await User.findOne({ email });
+    // const token = crypto.randomBytes(16).toString("hex");
+    
+    if (user && (await bcrypt.compare(password, user.password))) {
+        res.status(200).json({
+            //  message: "User logged in successfully",
+            //  message : "Login successful" , token,
+            user: {
+                id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+            },
+        });
+        // res.status(200).json({ message : "Login successful" , token});
+    } else {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+});  
 module.exports = { registerUser };

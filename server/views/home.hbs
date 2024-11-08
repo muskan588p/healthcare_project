@@ -6,7 +6,15 @@
 </head>
 <body>
     {{> header}}
-    <ul>
+    <div>
+        <form action="/profile" method="post"enctype="multipart/form-data">
+        <input type="file" name="avatar" id="username" required />
+
+        <input type="submit" value="Upload"/>
+    </form>
+    </div>
+    
+    {{!-- <ul>
         {{#each users}}
             <li>
                 <h2>Username: {{username}}</h2>
@@ -14,7 +22,7 @@
                 <p>Subject: {{subject}}</p>
             </li>
         {{/each}}
-    </ul>
+    </ul> --}}
 </body>
 </html>
 

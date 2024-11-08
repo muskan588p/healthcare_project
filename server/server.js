@@ -6,6 +6,8 @@ const cors = require("cors");
 const hbs = require("hbs");
 const path = require("path");
 hbs.registerPartials(path.join(__dirname, '/views/partials'));
+const multer=require("multer");
+const upload=multer({dest:"uploads/"});
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -13,6 +15,9 @@ dotenv.config();
 connectDb();
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(express.static("public"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(express.json());
 app.use(cors());
@@ -54,6 +59,23 @@ app.get("/allusers",(req,res)=>{
 // route for user registration and authentication
 
 app.use("/api/register",require("./routers/userRoutes"));
+
+app.post('/profile', upload.single('avatar'),function(req,res,next){
+    console.log(req.body);
+    console.log(req.file);
+    return res.redirect("/home");
+});
+const storage=multer.diskStorage({
+    destination: function(req,file,cb){
+        cb(null,"/tmp/my-uploads")
+    },
+    filename:function (req,file,cb){
+        const uniqueSuffix=Date.now()+"-"+ Math.round(Math.random()*1E9)
+        cb(null, file.fieldname+ "-"+ uniqueSuffix);
+    }
+})
+
+// const upload=multer({storage:storage});
 
 
 
