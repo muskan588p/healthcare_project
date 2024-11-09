@@ -18,21 +18,25 @@ const validateJwtToken = (req , res , next)=>{
         return res.status(401).json({ err:' Token not available'});
     }
     //we are storing tthe token values from header and splliting to get " bearer xyz.adcs to xyz.dji"
-    const token = req.headers.authorization.split(' ')[1];
+    const token = authorization.split(' ')[1];
     //Token provided is wrong throw error msg unauthorized
     if(!token){
-        return res.status(401).json({err : ' invalid token'});  
+        console.log("Token not found after splitting header"); // Debugging log
+        return res.status(401).json({ err: 'Unauthorized User' });
     }
     try{
         // in this errorhandler token is validaedor verified , then move to next middleware
         const validateToken = jwt.verify( token , process.env.PRIVATE_KEY);
         req.user=validateToken;
+        console.log("Token validated successfully:", validateToken); // Debug log
         next();
     }
     catch(err){
-        console.log(" Error occured ", err.message);
+        console.log("Error validating token:", err.message); // Debugging log
+        return res.status(401).json({ err: 'Invalid or expired token' });
     }
-}
+};
+
 module.exports = { genrateToken , validateJwtToken};
 // const createToken = jwt.sign(payload , process.env.PRIVATE_KEY , (err ,token )=>{
 //     if(err){
