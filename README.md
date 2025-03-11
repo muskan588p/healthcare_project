@@ -1,7 +1,6 @@
-# healthcare_project
-Healthcare Project Backend
+## Healthcare Project Backend
 
-Overview
+# Overview
 
 This is the backend server for the Healthcare Management System, responsible for handling authentication, storing patient and doctor information, managing appointments, and ensuring secure API communication.
 
@@ -21,7 +20,7 @@ bcrypt - Password encryption
 
 Multer - File upload handling (for reports, prescriptions, etc.)
 
-Features
+# Features
 
 User authentication (JWT-based login/signup for patients and doctors)
 
